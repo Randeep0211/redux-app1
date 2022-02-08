@@ -1,32 +1,45 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { SetSingleUser } from '../../redux/actions';
+import { setSingleUser, setLoading, setError } from '../../redux/actions';
 import { useParams } from 'react-router-dom';
 import styles from './user-detail.module.css';
+import Loading from '../../components/loading';
 
 const UserDetail = () => {
   const data = useSelector((state: any) => state.allUsers.user);
+  const loading = useSelector((state: any) => state.allUsers.loading);
+  const error = useSelector((state: any) => state.allUsers.error);
+
   const { id } = useParams();
   const dispatch = useDispatch();
   const fetchUsers = async () => {
-    const response = await axios.get<any[]>(
-      `https://jsonplaceholder.typicode.com/posts/${id}`
-    );
-
-    dispatch(SetSingleUser(response.data));
+    dispatch(setLoading(true));
+    try {
+      const response = await axios.get<any[]>(
+        `https://jsonplaceholder.typicode.com/posts/${id}`
+      );
+      dispatch(setSingleUser(response.data));
+    } catch (error: any) {
+      dispatch(setError(error.message));
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 
   useEffect(() => {
     fetchUsers();
   }, []);
   console.log(data);
+
+  if (loading) {
+    return <main>{<Loading />}</main>;
+  }
+
   return (
     <>
-      {!data ? (
-        <div>
-          <p>Loading...</p>
-        </div>
+      {!!loading || !data ? (
+        <p>{error}</p>
       ) : (
         <div className={styles.card}>
           <div> UserId: {data.userId}</div>
