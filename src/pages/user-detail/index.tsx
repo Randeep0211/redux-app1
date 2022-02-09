@@ -5,22 +5,23 @@ import { setSingleUser, setLoading, setError } from '../../redux/actions';
 import { useParams } from 'react-router-dom';
 import styles from './user-detail.module.css';
 import Loading from '../../components/loading';
+import { RootState } from '../../redux/reducers';
 
 const UserDetail = () => {
-  const data = useSelector((state: any) => state.allUsers.user);
-  const loading = useSelector((state: any) => state.allUsers.loading);
-  const error = useSelector((state: any) => state.allUsers.error);
+  const data = useSelector((state: RootState) => state.allUsers.user);
+  const loading = useSelector((state: RootState) => state.allUsers.loading);
+  const error = useSelector((state: RootState) => state.allUsers.error);
 
   const { id } = useParams();
   const dispatch = useDispatch();
   const fetchUsers = async () => {
     dispatch(setLoading(true));
     try {
-      const response = await axios.get<any[]>(
+      const response = await axios.get(
         `https://jsonplaceholder.typicode.com/posts/${id}`
       );
       dispatch(setSingleUser(response.data));
-    } catch (error: any) {
+    } catch (error) {
       dispatch(setError(error.message));
     } finally {
       dispatch(setLoading(false));

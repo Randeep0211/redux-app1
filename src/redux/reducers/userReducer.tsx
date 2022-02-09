@@ -1,10 +1,29 @@
 import { ActionTypes } from '../action-types';
 
-const initialState = {
+interface User {
+  id: number;
+  name: string;
+  title: string;
+  body: string;
+}
+interface State {
+  users: User[];
+  user: User | null;
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: State = {
   users: [],
+  error: '',
+  loading: false,
+  user: null,
 };
 
-export const UserReducer = (state = initialState, { type, payload }: any) => {
+export const UserReducer = (
+  state: State = initialState,
+  { type, payload }: any
+) => {
   switch (type) {
     case ActionTypes.SET_USERS:
       return { ...state, users: payload };
